@@ -243,13 +243,24 @@ function _GCMToFCMPayload(requestData, timeStamp) {
   }
 
   if (requestData.hasOwnProperty('data')) {
-    // Hack to convert any apns-keys that has to be integer type to string, since the data key in android does not support integer values 
-    // FCM gives an error on send otherwise if we try to use a payload that is supposed to be used for both android and apple
+    // Hack to convert any apns-keys that has to be integer type to string, since integer values are not supported under data for android
+    // FCM gives an error on send otherwise if we try to use a payload that is supposed to be used for both android and apple that contains these keys
     for (const key of apnsIntegerDataKeys) {
       if (requestData.data.hasOwnProperty(key)) {
         requestData.data[key] = requestData.data[key].toString() 
       }
     }
+
+    // Should be able to set title/message in data according to docs
+    // Need to do it like this to make it work in FCMv1
+    if (requestData.data.hasOwnProperty('title')) {
+      androidPayload.android.notification.title =  requestData.data.title
+    }
+
+    if (requestData.data.hasOwnProperty('alert')) {
+      androidPayload.android.notification.alert =  requestData.data.alert
+    }
+
     androidPayload.android.data = requestData.data;
   }
 
