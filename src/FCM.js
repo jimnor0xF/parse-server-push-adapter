@@ -251,16 +251,6 @@ function _GCMToFCMPayload(requestData, timeStamp) {
       }
     }
 
-    // Should be able to set title/message in data according to docs
-    // Need to do it like this to make it work in FCMv1
-    if (requestData.data.hasOwnProperty('title')) {
-      androidPayload.android.notification.title =  requestData.data.title
-    }
-
-    if (requestData.data.hasOwnProperty('alert')) {
-      androidPayload.android.notification.alert =  requestData.data.alert
-    }
-
     androidPayload.android.data = requestData.data;
   }
 
