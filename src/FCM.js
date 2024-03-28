@@ -242,6 +242,9 @@ function _GCMToFCMPayload(requestData, timeStamp) {
   }
 
   if (requestData.hasOwnProperty('data')) {
+    if (requestData.data.hasOwnProperty('badge')) {
+      requestData.data.badge = requestData.data.badge.toString();
+    }
     androidPayload.android.data = requestData.data;
   }
 
