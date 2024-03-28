@@ -9,6 +9,7 @@ import { randomString } from './PushAdapterUtils';
 const LOG_PREFIX = 'parse-server-push-adapter FCM';
 const FCMRegistrationTokensMax = 500;
 const FCMTimeToLiveMax = 4 * 7 * 24 * 60 * 60; // FCM allows a max of 4 weeks
+const apnsIntegerDataKeys = ['badge', 'content-available', 'mutable-content', 'priority', 'expiration_time']
 
 export default function FCM(args, pushType) {
   if (typeof args !== 'object' || !args.firebaseServiceAccount) {
@@ -242,8 +243,12 @@ function _GCMToFCMPayload(requestData, timeStamp) {
   }
 
   if (requestData.hasOwnProperty('data')) {
-    if (requestData.data.hasOwnProperty('badge')) {
-      requestData.data.badge = requestData.data.badge.toString();
+    // Hack to convert any apns-keys that has to be integer type to string, since the data key in android does not support integer values 
+    // FCM gives an error on send otherwise if we try to use a payload that is supposed to be used for both android and apple
+    for (const key of apnsIntegerDataKeys) {
+      if (requestData.data.hasOwnProperty(key)) {
+        requestData.data[key] = requestData.data[key].toString() 
+      }
     }
     androidPayload.android.data = requestData.data;
   }
